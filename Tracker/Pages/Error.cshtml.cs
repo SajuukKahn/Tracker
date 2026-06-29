@@ -15,6 +15,7 @@ namespace Tracker.Pages
         public void OnGet()
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            //// https://www.npgsql.org/efcore/index.html?tabs=onconfiguring
         }
     }
 }
