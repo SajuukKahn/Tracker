@@ -1,8 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using Tracker.Contexts;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+builder.Services.AddDbContextPool<TrackerContext>(opt =>
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("TrackerContext")));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
