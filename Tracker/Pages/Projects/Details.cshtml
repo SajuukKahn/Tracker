@@ -1,0 +1,197 @@
+@page
+@model Tracker.Pages.Projects.DetailsModel
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@Model.Project.Name</h1>
+    <div>
+        <a asp-page="Edit" asp-route-id="@Model.Project.Id" class="btn btn-outline-secondary">Edit Project</a>
+        <a asp-page="/Issues/Create" asp-route-projectId="@Model.Project.Id" class="btn btn-danger">Report Issue</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">@(Model.Project.Description ?? "No description provided")</p>
+                <p class="text-muted mb-0"><small>Created: @Model.Project.CreatedDate.ToString("MMMM dd, yyyy")</small></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h3 class="text-primary">@Model.Project.Machines.Count</h3>
+                <p class="mb-0">Machines</p>
+            </div>
+        </div>
+        <div class="card bg-light mt-3">
+            <div class="card-body text-center">
+                <h3 class="text-info">@Model.Project.People.Count</h3>
+                <p class="mb-0">People</p>
+            </div>
+        </div>
+        <div class="card bg-light mt-3">
+            <div class="card-body text-center">
+                <h3 class="@(Model.OpenIssuesCount > 0 ? "text-warning" : "text-success")">@Model.OpenIssuesCount</h3>
+                <p class="mb-0">Open Issues</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mb-3" id="projectTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="machines-tab" data-bs-toggle="tab" data-bs-target="#machines" type="button" role="tab">
+            Machines (@Model.Project.Machines.Count)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="people-tab" data-bs-toggle="tab" data-bs-target="#people" type="button" role="tab">
+            People (@Model.Project.People.Count)
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues" type="button" role="tab">
+            Issues (@Model.Project.Issues.Count)
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="projectTabsContent">
+    <div class="tab-pane fade show active" id="machines" role="tabpanel">
+        <div class="d-flex justify-content-between mb-3">
+            <h4>Machines</h4>
+            <a asp-page="/Machines/Create" asp-route-projectId="@Model.Project.Id" class="btn btn-sm btn-primary">Add Machine</a>
+        </div>
+
+        @if (!Model.Project.Machines.Any())
+        {
+            <div class="alert alert-info">No machines added yet.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Serial Number</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var machine in Model.Project.Machines)
+                        {
+                            <tr>
+                                <td>@machine.SerialNumber</td>
+                                <td>
+                                    <a asp-page="/Machines/Details" asp-route-id="@machine.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="tab-pane fade" id="people" role="tabpanel">
+        <div class="d-flex justify-content-between mb-3">
+            <h4>People</h4>
+            <a asp-page="/Projects/AddPerson" asp-route-projectId="@Model.Project.Id" class="btn btn-sm btn-primary">Add Person</a>
+        </div>
+
+        @if (!Model.Project.People.Any())
+        {
+            <div class="alert alert-info">No people assigned yet.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var person in Model.Project.People)
+                        {
+                            <tr>
+                                <td>@person.FirstName @person.LastName</td>
+                                <td>@person.Email</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="tab-pane fade" id="issues" role="tabpanel">
+        <div class="d-flex justify-content-between mb-3">
+            <h4>Issues</h4>
+            <a asp-page="/Issues/Create" asp-route-projectId="@Model.Project.Id" class="btn btn-sm btn-danger">Report Issue</a>
+        </div>
+
+        @if (!Model.Project.Issues.Any())
+        {
+            <div class="alert alert-info">No issues reported yet.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Reported</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var issue in Model.Project.Issues.OrderByDescending(i => i.ReportedDate))
+                        {
+                            <tr>
+                                <td>@issue.Title</td>
+                                <td>
+                                    <span class="badge bg-@(issue.Severity switch {
+                                        Tracker.Enums.Severity.Critical => "danger",
+                                        Tracker.Enums.Severity.High => "warning",
+                                        Tracker.Enums.Severity.Medium => "info",
+                                        _ => "secondary"
+                                    })">@issue.Severity</span>
+                                </td>
+                                <td>
+                                    @if (issue.IsResolved)
+                                    {
+                                        <span class="badge bg-success">Resolved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Open</span>
+                                    }
+                                </td>
+                                <td>@issue.ReportedDate.ToString("MM/dd/yyyy")</td>
+                                <td>
+                                    <a asp-page="/Issues/Details" asp-route-id="@issue.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-page="Index" class="btn btn-secondary">Back to Projects</a>
+</div>

@@ -1,10 +1,107 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4">Project Dashboard</h1>
+        <a asp-page="/Projects/Create" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle"></i> New Project
+        </a>
+    </div>
+
+    @if (!Model.Projects.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <h4>No projects yet</h4>
+            <p>Get started by creating your first project.</p>
+            <a asp-page="/Projects/Create" class="btn btn-primary">Create Project</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var project in Model.Projects)
+            {
+                var openIssues = Model.ProjectOpenIssueCounts[project.Id];
+                var totalIssues = Model.ProjectIssueCounts[project.Id];
+                var statusClass = openIssues > 0 ? "warning" : "success";
+
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-@statusClass text-white">
+                            <h5 class="card-title mb-0">@project.Name</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text text-muted">@(project.Description ?? "No description")</p>
+
+                            <div class="row text-center mt-3">
+                                <div class="col-4">
+                                    <div class="stat-box">
+                                        <div class="stat-number text-primary">@project.Machines.Count</div>
+                                        <div class="stat-label">Machines</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-box">
+                                        <div class="stat-number text-info">@project.People.Count</div>
+                                        <div class="stat-label">People</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-box">
+                                        <div class="stat-number text-@statusClass">@openIssues</div>
+                                        <div class="stat-label">Open Issues</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (openIssues > 0)
+                            {
+                                <div class="alert alert-warning mt-3 mb-0 py-2">
+                                    <small><strong>@openIssues</strong> of <strong>@totalIssues</strong> issues need attention</small>
+                                </div>
+                            }
+                            else if (totalIssues > 0)
+                            {
+                                <div class="alert alert-success mt-3 mb-0 py-2">
+                                    <small>All @totalIssues issues resolved!</small>
+                                </div>
+                            }
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between">
+                                <a asp-page="/Projects/Details" asp-route-id="@project.Id" class="btn btn-sm btn-outline-primary">View Details</a>
+                                <a asp-page="/Issues/Create" asp-route-projectId="@project.Id" class="btn btn-sm btn-outline-danger">Report Issue</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
+
+<style>
+    .stat-box {
+        padding: 10px;
+    }
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+    .stat-label {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+</style>

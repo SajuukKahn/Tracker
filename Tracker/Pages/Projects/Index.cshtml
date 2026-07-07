@@ -1,0 +1,65 @@
+@page
+@model Tracker.Pages.Projects.IndexModel
+@{
+    ViewData["Title"] = "Projects";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Projects</h1>
+    <a asp-page="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create New Project
+    </a>
+</div>
+
+@if (!Model.Projects.Any())
+{
+    <div class="alert alert-info">
+        <h4>No projects found</h4>
+        <p>Start by creating your first project.</p>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Machines</th>
+                    <th>People</th>
+                    <th>Open Issues</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model.Projects)
+                {
+                    var openIssues = project.Issues.Count(i => !i.IsResolved);
+                    <tr>
+                        <td><strong>@project.Name</strong></td>
+                        <td>@(project.Description ?? "-")</td>
+                        <td>@project.Machines.Count</td>
+                        <td>@project.People.Count</td>
+                        <td>
+                            @if (openIssues > 0)
+                            {
+                                <span class="badge bg-warning text-dark">@openIssues</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">0</span>
+                            }
+                        </td>
+                        <td>@project.CreatedDate.ToString("MM/dd/yyyy")</td>
+                        <td>
+                            <a asp-page="Details" asp-route-id="@project.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                            <a asp-page="Edit" asp-route-id="@project.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

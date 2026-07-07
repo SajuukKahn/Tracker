@@ -1,0 +1,105 @@
+@page
+@model Tracker.Pages.Machines.DetailsModel
+@{
+    ViewData["Title"] = "Machine Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@Model.Machine.SerialNumber</h1>
+    <div>
+        <a asp-page="/Projects/Details" asp-route-id="@Model.Machine.ProjectId" class="btn btn-secondary">Back to Project</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Machine Information</h5>
+            </div>
+            <div class="card-body">
+                <dl>
+                    <dt>Serial Number</dt>
+                    <dd>@Model.Machine.SerialNumber</dd>
+
+                    <dt>Project</dt>
+                    <dd>
+                        <a asp-page="/Projects/Details" asp-route-id="@Model.Machine.ProjectId">
+                            @Model.Machine.ProjectId
+                        </a>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <h4>Related Issues</h4>
+        @if (!Model.RelatedIssues.Any())
+        {
+            <div class="alert alert-info">No issues reported for this machine.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var issue in Model.RelatedIssues)
+                        {
+                            <tr>
+                                <td>@issue.Title</td>
+                                <td>
+                                    <span class="badge bg-@(issue.Severity switch {
+                                        Tracker.Enums.Severity.Critical => "danger",
+                                        Tracker.Enums.Severity.High => "warning",
+                                        Tracker.Enums.Severity.Medium => "info",
+                                        _ => "secondary"
+                                    })">@issue.Severity</span>
+                                </td>
+                                <td>
+                                    @if (issue.IsResolved)
+                                    {
+                                        <span class="badge bg-success">Resolved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Open</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-page="/Issues/Details" asp-route-id="@issue.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Statistics</h5>
+            </div>
+            <div class="card-body">
+                <dl>
+                    <dt>Total Issues</dt>
+                    <dd><strong>@Model.RelatedIssues.Count</strong></dd>
+
+                    <dt>Open Issues</dt>
+                    <dd><strong class="text-warning">@Model.RelatedIssues.Count(i => !i.IsResolved)</strong></dd>
+
+                    <dt>Resolved Issues</dt>
+                    <dd><strong class="text-success">@Model.RelatedIssues.Count(i => i.IsResolved)</strong></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

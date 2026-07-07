@@ -1,0 +1,155 @@
+@page
+@model Tracker.Pages.Issues.DetailsModel
+@{
+    ViewData["Title"] = "Issue Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Issue Details</h1>
+    <div>
+        @if (!Model.Issue.IsResolved)
+        {
+            <form method="post" class="d-inline">
+                <button type="submit" class="btn btn-success">Mark as Resolved</button>
+            </form>
+        }
+        <a asp-page="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-@(Model.Issue.Severity switch {
+                Tracker.Enums.Severity.Critical => "danger",
+                Tracker.Enums.Severity.High => "warning",
+                Tracker.Enums.Severity.Medium => "info",
+                _ => "secondary"
+            }) text-white">
+                <h4 class="mb-0">@Model.Issue.Title</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Description</label>
+                    <p>@Model.Issue.Description</p>
+                </div>
+
+                @if (Model.Issue.IsResolved && !string.IsNullOrEmpty(Model.Issue.ResolutionNotes))
+                {
+                    <div class="alert alert-success">
+                        <label class="form-label fw-bold">Resolution Notes</label>
+                        <p class="mb-0">@Model.Issue.ResolutionNotes</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (!Model.Issue.IsResolved)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Resolve Issue</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="ResolutionNotes" class="form-label">Resolution Notes</label>
+                            <textarea asp-for="ResolutionNotes" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Mark as Resolved</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Details</h5>
+            </div>
+            <div class="card-body">
+                <dl>
+                    <dt>Status</dt>
+                    <dd>
+                        @if (Model.Issue.IsResolved)
+                        {
+                            <span class="badge bg-success">Resolved</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Open</span>
+                        }
+                    </dd>
+
+                    <dt>Severity</dt>
+                    <dd>
+                        <span class="badge bg-@(Model.Issue.Severity switch {
+                            Tracker.Enums.Severity.Critical => "danger",
+                            Tracker.Enums.Severity.High => "warning",
+                            Tracker.Enums.Severity.Medium => "info",
+                            _ => "secondary"
+                        })">@Model.Issue.Severity</span>
+                    </dd>
+
+                    <dt>Project</dt>
+                    <dd>
+                        @if (Model.Issue.Project != null)
+                        {
+                            <a asp-page="/Projects/Details" asp-route-id="@Model.Issue.Project.Id">@Model.Issue.Project.Name</a>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </dd>
+
+                    <dt>Machine</dt>
+                    <dd>
+                        @if (Model.Issue.Machine != null)
+                        {
+                            <a asp-page="/Machines/Details" asp-route-id="@Model.Issue.Machine.Id">@Model.Issue.Machine.SerialNumber</a>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </dd>
+
+                    <dt>Reported By</dt>
+                    <dd>
+                        @if (Model.Issue.ReportedBy != null)
+                        {
+                            <span>@Model.Issue.ReportedBy.FirstName @Model.Issue.ReportedBy.LastName</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </dd>
+
+                    <dt>Assigned To</dt>
+                    <dd>
+                        @if (Model.Issue.AssignedTo != null)
+                        {
+                            <span>@Model.Issue.AssignedTo.FirstName @Model.Issue.AssignedTo.LastName</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </dd>
+
+                    <dt>Reported Date</dt>
+                    <dd>@Model.Issue.ReportedDate.ToString("MMMM dd, yyyy")</dd>
+
+                    @if (Model.Issue.IsResolved && Model.Issue.ResolvedDate.HasValue)
+                    {
+                        <dt>Resolved Date</dt>
+                        <dd>@Model.Issue.ResolvedDate.Value.ToString("MMMM dd, yyyy")</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

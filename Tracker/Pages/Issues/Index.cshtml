@@ -1,0 +1,91 @@
+@page
+@model Tracker.Pages.Issues.IndexModel
+@{
+    ViewData["Title"] = "Issues";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Issues</h1>
+    <a asp-page="Create" class="btn btn-danger">
+        <i class="bi bi-exclamation-triangle"></i> Report Issue
+    </a>
+</div>
+
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(Model.Filter == "all" ? "active" : "")" asp-page="Index" asp-route-filter="all">
+            All Issues (@Model.AllIssues.Count)
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.Filter == "open" ? "active" : "")" asp-page="Index" asp-route-filter="open">
+            Open (@Model.AllIssues.Count(i => !i.IsResolved))
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(Model.Filter == "resolved" ? "active" : "")" asp-page="Index" asp-route-filter="resolved">
+            Resolved (@Model.AllIssues.Count(i => i.IsResolved))
+        </a>
+    </li>
+</ul>
+
+@if (!Model.Issues.Any())
+{
+    <div class="alert alert-info">
+        No @(Model.Filter == "open" ? "open" : Model.Filter == "resolved" ? "resolved" : "") issues found.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th>
+                    <th>Project</th>
+                    <th>Machine</th>
+                    <th>Severity</th>
+                    <th>Reported By</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Reported</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var issue in Model.Issues)
+                {
+                    <tr class="@(issue.IsResolved ? "table-success" : "")">
+                        <td><strong>@issue.Title</strong></td>
+                        <td>@issue.Project?.Name</td>
+                        <td>@(issue.Machine?.SerialNumber ?? "-")</td>
+                        <td>
+                            <span class="badge bg-@(issue.Severity switch {
+                                Tracker.Enums.Severity.Critical => "danger",
+                                Tracker.Enums.Severity.High => "warning",
+                                Tracker.Enums.Severity.Medium => "info",
+                                _ => "secondary"
+                            })">@issue.Severity</span>
+                        </td>
+                        <td>@(issue.ReportedBy != null ? $"{issue.ReportedBy.FirstName} {issue.ReportedBy.LastName}" : "-")</td>
+                        <td>@(issue.AssignedTo != null ? $"{issue.AssignedTo.FirstName} {issue.AssignedTo.LastName}" : "-")</td>
+                        <td>
+                            @if (issue.IsResolved)
+                            {
+                                <span class="badge bg-success">Resolved</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Open</span>
+                            }
+                        </td>
+                        <td>@issue.ReportedDate.ToString("MM/dd/yyyy")</td>
+                        <td>
+                            <a asp-page="Details" asp-route-id="@issue.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
