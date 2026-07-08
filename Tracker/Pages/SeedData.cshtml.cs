@@ -26,12 +26,6 @@ namespace Tracker.Pages
         {
             try
             {
-                // Check if data already exists
-                if (_context.Projects.Any())
-                {
-                    Success = false;
-                    return Page();
-                }
 
                 // Create sample people
                 var person1 = new Person { FirstName = "John", LastName = "Smith", Email = "john.smith@example.com" };

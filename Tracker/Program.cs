@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContextPool<TrackerContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString("TrackerContext"), sqlOptionsBuilder => sqlOptionsBuilder.EnableRetryOnFailure()));
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("TrackerContext")));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
