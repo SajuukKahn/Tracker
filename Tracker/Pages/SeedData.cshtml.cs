@@ -26,98 +26,133 @@ namespace Tracker.Pages
         {
             try
             {
+                var people = new List<Person>
+                {
+                    new Person { FirstName = "John", LastName = "Smith", Email = "john.smith@example.com" },
+                    new Person { FirstName = "Sarah", LastName = "Johnson", Email = "sarah.johnson@example.com" },
+                    new Person { FirstName = "Mike", LastName = "Davis", Email = "mike.davis@example.com" },
+                    new Person { FirstName = "Emily", LastName = "Wilson", Email = "emily.wilson@example.com" },
+                    new Person { FirstName = "Daniel", LastName = "Brown", Email = "daniel.brown@example.com" },
+                    new Person { FirstName = "Alicia", LastName = "Garcia", Email = "alicia.garcia@example.com" },
+                    new Person { FirstName = "Chris", LastName = "Martinez", Email = "chris.martinez@example.com" },
+                    new Person { FirstName = "Priya", LastName = "Patel", Email = "priya.patel@example.com" },
+                    new Person { FirstName = "Liam", LastName = "Nguyen", Email = "liam.nguyen@example.com" },
+                    new Person { FirstName = "Maya", LastName = "Kim", Email = "maya.kim@example.com" },
+                    new Person { FirstName = "Jordan", LastName = "Lee", Email = "jordan.lee@example.com" },
+                    new Person { FirstName = "Nina", LastName = "Rodriguez", Email = "nina.rodriguez@example.com" }
+                };
 
-                // Create sample people
-                var person1 = new Person { FirstName = "John", LastName = "Smith", Email = "john.smith@example.com" };
-                var person2 = new Person { FirstName = "Sarah", LastName = "Johnson", Email = "sarah.johnson@example.com" };
-                var person3 = new Person { FirstName = "Mike", LastName = "Davis", Email = "mike.davis@example.com" };
-                var person4 = new Person { FirstName = "Emily", LastName = "Wilson", Email = "emily.wilson@example.com" };
-
-                _context.People.AddRange(person1, person2, person3, person4);
+                _context.People.AddRange(people);
                 await _context.SaveChangesAsync();
 
-                // Create sample projects
-                var project1 = new Project
+                var projects = new List<Project>
                 {
-                    Name = "Assembly Line A",
-                    Description = "Main production assembly line for product A",
-                    CreatedDate = DateTime.UtcNow,
-                    People = [person1, person2]
+                    new Project
+                    {
+                        Name = "Assembly Line A",
+                        Description = "Main production assembly line for product A",
+                        CreatedDate = DateTime.UtcNow.AddDays(-30),
+                        People = [people[0], people[1], people[2]]
+                    },
+                    new Project
+                    {
+                        Name = "Packaging System",
+                        Description = "Automated packaging and labeling system",
+                        CreatedDate = DateTime.UtcNow.AddDays(-24),
+                        People = [people[3], people[4], people[5]]
+                    },
+                    new Project
+                    {
+                        Name = "Robot Cell 3",
+                        Description = "Collaborative robotics workcell for palletizing",
+                        CreatedDate = DateTime.UtcNow.AddDays(-18),
+                        People = [people[6], people[7], people[8]]
+                    },
+                    new Project
+                    {
+                        Name = "Quality Inspection Station",
+                        Description = "Vision-based inspection and defect verification",
+                        CreatedDate = DateTime.UtcNow.AddDays(-12),
+                        People = [people[9], people[10], people[11]]
+                    }
                 };
 
-                var project2 = new Project
-                {
-                    Name = "Packaging System",
-                    Description = "Automated packaging and labeling system",
-                    CreatedDate = DateTime.UtcNow,
-                    People = [person3, person4]
-                };
-
-                _context.Projects.AddRange(project1, project2);
+                _context.Projects.AddRange(projects);
                 await _context.SaveChangesAsync();
 
-                // Create sample machines
-                var machine1 = new Machine { SerialNumber = "ASM-001", ProjectId = project1.Id };
-                var machine2 = new Machine { SerialNumber = "ASM-002", ProjectId = project1.Id };
-                var machine3 = new Machine { SerialNumber = "PKG-001", ProjectId = project2.Id };
+                var machines = new List<Machine>
+                {
+                    new Machine { SerialNumber = "ASM-001", ProjectId = projects[0].Id },
+                    new Machine { SerialNumber = "ASM-002", ProjectId = projects[0].Id },
+                    new Machine { SerialNumber = "PKG-001", ProjectId = projects[1].Id },
+                    new Machine { SerialNumber = "PKG-002", ProjectId = projects[1].Id },
+                    new Machine { SerialNumber = "RBT-001", ProjectId = projects[2].Id },
+                    new Machine { SerialNumber = "RBT-002", ProjectId = projects[2].Id },
+                    new Machine { SerialNumber = "QIS-001", ProjectId = projects[3].Id },
+                    new Machine { SerialNumber = "QIS-002", ProjectId = projects[3].Id }
+                };
 
-                _context.Machines.AddRange(machine1, machine2, machine3);
+                _context.Machines.AddRange(machines);
                 await _context.SaveChangesAsync();
 
-                // Create sample issues
-                var issue1 = new Issue
+                var severities = new[] { Severity.High, Severity.Medium, Severity.Critical, Severity.Low };
+                var issueTitles = new[]
                 {
-                    Title = "Conveyor Belt Misalignment",
-                    Description = "The conveyor belt on Assembly Line A is not properly aligned, causing product jams.",
-                    Severity = Severity.High,
-                    ProjectId = project1.Id,
-                    MachineId = machine1.Id,
-                    ReportedById = person1.Id,
-                    AssignedToId = person3.Id,
-                    ReportedDate = DateTime.UtcNow.AddDays(-5),
-                    IsResolved = false
+                    "Conveyor Belt Misalignment",
+                    "Sensor Calibration Needed",
+                    "Software Update Failed",
+                    "Hydraulic Fluid Leak",
+                    "Drive Motor Overheating",
+                    "Safety Interlock Fault",
+                    "Network Latency Spike",
+                    "Vision Camera Blur",
+                    "Actuator Stall Detected",
+                    "Label Printer Jam",
+                    "Pressure Sensor Drift",
+                    "Wiring Harness Wear",
+                    "Control Panel Error",
+                    "Pneumatic Valve Leak",
+                    "Thermal Camera Offset",
+                    "Operator HMI Freeze"
                 };
 
-                var issue2 = new Issue
-                {
-                    Title = "Sensor Calibration Needed",
-                    Description = "Vision system sensors need recalibration for accurate measurements.",
-                    Severity = Severity.Medium,
-                    ProjectId = project1.Id,
-                    MachineId = machine2.Id,
-                    ReportedById = person2.Id,
-                    AssignedToId = person4.Id,
-                    ReportedDate = DateTime.UtcNow.AddDays(-3),
-                    IsResolved = false
-                };
+                var issues = new List<Issue>();
+                var baseDate = DateTime.UtcNow;
 
-                var issue3 = new Issue
+                for (var i = 0; i < 16; i++)
                 {
-                    Title = "Software Update Failed",
-                    Description = "The latest firmware update didn't install properly on the control system.",
-                    Severity = Severity.Critical,
-                    ProjectId = project2.Id,
-                    MachineId = machine3.Id,
-                    ReportedById = person3.Id,
-                    ReportedDate = DateTime.UtcNow.AddDays(-1),
-                    IsResolved = false
-                };
+                    var project = projects[i % projects.Count];
+                    var machine = machines[(i + 2) % machines.Count];
+                    var reporter = people[i % people.Count];
+                    var assignee = people[(i + 3) % people.Count];
 
-                var issue4 = new Issue
-                {
-                    Title = "Hydraulic Fluid Leak",
-                    Description = "Minor hydraulic fluid leak detected near actuator arm.",
-                    Severity = Severity.Low,
-                    ProjectId = project1.Id,
-                    MachineId = machine1.Id,
-                    ReportedById = person1.Id,
-                    ReportedDate = DateTime.UtcNow.AddDays(-10),
-                    IsResolved = true,
-                    ResolvedDate = DateTime.UtcNow.AddDays(-8),
-                    ResolutionNotes = "Seal was replaced and system was pressure tested."
-                };
+                    var issue = new Issue
+                    {
+                        Title = $"{issueTitles[i % issueTitles.Length]} #{i + 1}",
+                        Description = $"Automated seed data issue {i + 1} for {project.Name}.",
+                        Severity = severities[i % severities.Length],
+                        ProjectId = project.Id,
+                        MachineId = machine.Id,
+                        ReportedById = reporter.Id,
+                        ReportedDate = baseDate.AddDays(-(i + 1)),
+                        IsResolved = i % 4 == 0
+                    };
 
-                _context.Issues.AddRange(issue1, issue2, issue3, issue4);
+                    if (i % 2 == 0)
+                    {
+                        issue.AssignedToId = assignee.Id;
+                    }
+
+                    if (issue.IsResolved)
+                    {
+                        issue.ResolvedDate = baseDate.AddDays(-(i + 1) + 1);
+                        issue.ResolutionNotes = "Resolved through routine maintenance and validation.";
+                    }
+
+                    issues.Add(issue);
+                }
+
+                _context.Issues.AddRange(issues);
                 await _context.SaveChangesAsync();
 
                 Success = true;

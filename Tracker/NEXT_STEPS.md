@@ -1,0 +1,42 @@
+Feature Implementation list
+- Big challenge: people entities should not come from the DB but from Microsoft Entra
+  - not sure how best to store the entries in the db for who people are... might be entra unique IDs, might just be email addresses
+  - This also should be used when someone is resolving an issue to automatically set them as the person who resolved it, and when someone is reporting an issue to automatically set them as the reporter
+- Need to be able to send emails to people on a project, or to the person assigned to a machine, or to the person assigned to an issue
+  - emails should auto generate and send when an issue is assigned to someone, or when an issue is resolved
+- Projects deletion capability
+- Projects archival capability (do not show in dashboard)
+- Dashboard needs search functions
+  - search by project name, machine name, person name
+- Project People need to have an assignable role on that project
+- People should also be assignable to a Machine within a project, also with a role
+- Project page changes:
+  - Should have a section below descripton where it shows the main people on project with roles instead of being in a tab
+  - The Machines list should show:
+	- This should be transformed into Cards like the Project view, looks nicer, and should include "report issue" buttons on the cards too
+	- Total issues for each machine
+	- Open issues for each machine
+	- Resolved issues for each machine
+	- Needs to support links to the file server folders / files
+- Issues Page needs search, ordering, and filtering capabilities
+  - search by issue title, description, project name, machine name, person name
+  - filter or order by severity, status (open/resolved), project, machine, assigned person
+  - needs to also support pagination because this list will quickly grow
+- Need a management page to manage access based on Microsoft Entra groups 
+  - utilized for things like creating projects and machines (don't want everyone to be able to do that)
+  - Allowance for adding db items... like adding Severity levels, or adding other items so lists are not static, things like "machine type" etc. 
+	- Machine Type, Department, Roles, 
+- Issue model should include 
+  - root cause analysis field, maybe a text field or a dropdown of common root causes or root issue department
+- Report issue screen:
+  - needs some UX work, feels clunky.. maybe a modal wizard style form would be better, overlay whatever screen is currently being viewed
+  - ensure form filled before allowing post
+  - allow for attachments to be uploaded, and stored in a blob storage container
+- Machine Details screen:
+  - Related Issues needs to be sorted by severity and status, and should have a search function
+  - Related issues should show more detail, such as the reporter, the assigned person, the date reported, etc.
+  - Issues list should also allow for actions to be carried out easily without going to the issue page, like resolving an issue, or reassigning it to someone else, etc.
+  - Issues also need to be resolved in a way indicates that it wasn't really an issue, like a false-positive, or a duplicate, or a "not an issue" type of resolution
+  - Needs to support links to the file server folders / file
+  - Project link is using the unique ID which is just a number - need to change this to show the project name instead, so it is more user friendly
+- Eventually need some slick Power BI style dashboard views, or even actual BI stuff
