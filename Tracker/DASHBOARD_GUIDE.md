@@ -5,7 +5,7 @@ The Tracker application is a simple yet powerful dashboard for managing industri
 
 ## Features
 
-### 1. **Dashboard (Home)**
+### 1. **Dashboard**
 - **Quick Overview**: View all projects at a glance with key statistics
 - **Project Cards**: Each project displays:
   - Number of associated machines
